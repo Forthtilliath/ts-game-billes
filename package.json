@@ -1,0 +1,20 @@
+{
+    "name": "project",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "",
+    "author": "Forth <33458877+Forthtilliath@users.noreply.github.com>",
+    "license": "MIT",
+    "scripts": {
+        "init": "yarn",
+        "start-sass": "sass --no-source-map --watch styles/scss/index.scss:styles/css/style.css",
+        "start-ts": "tsc --build tsconfig.json --watch --preserveWatchOutput",
+        "start": "concurrently -k -n \"Typescript,SASS\" -p \"[{name}]\" -c \"blue,green\" \"yarn run start-ts\" \"yarn run start-sass\""
+    },
+    "dependencies": {
+        "alpinejs": "^3.4.2",
+        "concurrently": "*",
+        "sass": "*",
+        "typescript": "*"
+    }
+}
