@@ -5,7 +5,7 @@ export type ModalElement = {
 };
 
 export type Button = {
-    id: string;
+    id?: string;
     content: string;
     styles?: {};
     stylesHover?: {};
@@ -16,8 +16,8 @@ export type ModalOptions = {
     title?: string;
     content: string;
     buttons: Button[];
-    size: { width: string; height: string };
-    close: boolean;
+    size?: { width: string; height: string };
+    close?: boolean;
 };
 
 export type ModalUiOptions = ModalOptions & {

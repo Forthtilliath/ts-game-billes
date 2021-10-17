@@ -53,6 +53,5 @@ export function shadeColor(color: string, decimal: number): string {
     const gg = g.toString(16).length === 1 ? `0${g.toString(16)}` : g.toString(16);
     const bb = b.toString(16).length === 1 ? `0${b.toString(16)}` : b.toString(16);
 
-    console.log(color,`#${rr}${gg}${bb}` );
     return `#${rr}${gg}${bb}`;
 }

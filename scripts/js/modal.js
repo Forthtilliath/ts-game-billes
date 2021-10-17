@@ -45,72 +45,78 @@ export default class Modal {
         const modals = [this._alert, this._confirm, this._prompt];
         Object.assign(modals[this._modalOpened]?.style, {
             display: 'none',
-            opacity: 0
+            opacity: 0,
         });
         this._modalOpened = MODAL_NONE;
     }
     setConfirm({ title = '', content, buttons, size, close = true }) {
-        if (!this._confirm) {
-            const div = this.createModal({
-                title,
-                content,
-                buttons,
-                size,
-                close,
-                ui: {
-                    title: title.trim() !== '',
-                    input: false,
-                    buttons: true,
-                },
-                id: 'modal__confirm',
-            });
-            this._container.appendChild(div);
-            this._confirm = div;
+        if (this._confirm) {
+            this._confirm.remove();
         }
+        const div = this.createModal({
+            title,
+            content,
+            buttons,
+            size,
+            close,
+            ui: {
+                title: title.trim() !== '',
+                input: false,
+                buttons: true,
+            },
+            id: 'modal__confirm',
+        });
+        this._container.appendChild(div);
+        this._confirm = div;
+        return this;
     }
     setAlert({ title = '', content, buttons, size, close = true }) {
-        if (!this._alert) {
-            const div = this.createModal({
-                title,
-                content,
-                buttons,
-                size,
-                close,
-                ui: {
-                    title: title.trim() !== '',
-                    input: false,
-                    buttons: true,
-                },
-                id: 'modal__alert',
-            });
-            this._container.appendChild(div);
-            this._alert = div;
+        if (this._alert) {
+            this._alert.remove();
         }
+        const div = this.createModal({
+            title,
+            content,
+            buttons,
+            size,
+            close,
+            ui: {
+                title: title.trim() !== '',
+                input: false,
+                buttons: true,
+            },
+            id: 'modal__alert',
+        });
+        this._container.appendChild(div);
+        this._alert = div;
+        return this;
     }
     setPrompt({ title = '', content, buttons, size, close = true }) {
-        if (!this._prompt) {
-            const div = this.createModal({
-                title,
-                content,
-                buttons,
-                size,
-                close,
-                ui: {
-                    title: title.trim() !== '',
-                    input: true,
-                    buttons: true,
-                },
-                id: 'modal__prompt',
-            });
-            this._container.appendChild(div);
-            this._prompt = div;
+        if (this._prompt) {
+            this._prompt.remove();
         }
+        const div = this.createModal({
+            title,
+            content,
+            buttons,
+            size,
+            close,
+            ui: {
+                title: title.trim() !== '',
+                input: true,
+                buttons: true,
+            },
+            id: 'modal__prompt',
+        });
+        this._container.appendChild(div);
+        this._prompt = div;
+        return this;
     }
     createModal({ title, content, buttons, size, close = true, id, ui }) {
         const styles = {
             ...modalStyles.modal.container,
-            width: size.width,
-            height: size.height,
+            width: size ? size.width : 'auto',
+            height: size ? size.height : 'auto',
         };
         const div = createElement({ id, styles });
         const divTop = createElement({ styles: modalStyles.modal.top });
@@ -126,7 +132,7 @@ export default class Modal {
         const divContent = createElement({ styles: modalStyles.modal.content });
         divContent.textContent = content;
         div.appendChild(divContent);
-        const divBottom = createElement({ styles: modalStyles.modal.buttonsWrapper });
+        const divBottom = createElement({ styles: modalStyles.modal.bottom });
         div.appendChild(divBottom);
         buttons.forEach((button) => {
             const stylesButton = {
@@ -144,7 +150,6 @@ export default class Modal {
                 styles: stylesButton,
                 click: button.click,
             });
-            divButtons.addEventListener('click', () => this.close());
             divButtons.addEventListener('mouseover', () => Object.assign(divButtons.style, stylesButtonHover));
             divButtons.addEventListener('mouseout', () => Object.assign(divButtons.style, stylesButton));
             divButtons.textContent = button.content;
@@ -205,13 +210,15 @@ const modalStyles = {
             cursor: 'pointer',
         },
         content: {
-            padding: '10px',
+            padding: '20px',
             flex: 1,
+            whiteSpace: 'pre-wrap',
         },
-        buttonsWrapper: {
+        bottom: {
             display: 'flex',
             justifyContent: 'space-around',
             alignItems: 'center',
+            gap: '10px',
             backgroundColor: '#0002',
             height: '50px',
             padding: '10px',
@@ -222,7 +229,8 @@ const modalStyles = {
             borderRadius: '5px',
             border: 'none',
             cursor: 'pointer',
-            backgroundColor: '#cccccc',
+            backgroundColor: '#2d2d2d',
+            color: 'white',
         },
         buttonHover: {},
     },

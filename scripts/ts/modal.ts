@@ -35,12 +35,12 @@ export default class Modal {
      * @param to Etat final
      * @param step Incrementation de l'opacité chaque 10ms
      */
-    private setOpacity(element:HTMLElement, to: number, step: number) {
+    private setOpacity(element: HTMLElement, to: number, step: number) {
         let current = +element.style.opacity;
         if (current < to && this._modalOpened !== MODAL_NONE) {
             current += step;
             element.style.opacity = current.toString();
-            setTimeout(() => this.setOpacity(element,to, step), 10);
+            setTimeout(() => this.setOpacity(element, to, step), 10);
         }
     }
 
@@ -57,22 +57,14 @@ export default class Modal {
         });
 
         const modals = [this._alert, this._confirm, this._prompt];
-
-
-        // console.log(modals[modalToOpen]);
         Object.assign(modals[modalToOpen]?.style, {
             display: 'flex',
         });
-        // Object.assign(modals[modalToOpen]?.style, {
-        //     opacity: 1
-        // });
-
 
         this.setOpacity(modals[modalToOpen]!, 1, step);
     }
 
     public close() {
-        // console.log('close modal');
         Object.assign(this._container.style, {
             visibility: 'hidden',
         });
@@ -80,155 +72,86 @@ export default class Modal {
         const modals = [this._alert, this._confirm, this._prompt];
         Object.assign(modals[this._modalOpened]?.style, {
             display: 'none',
-            opacity: 0
+            opacity: 0,
         });
         this._modalOpened = MODAL_NONE;
     }
 
-    // public confirm(
-    //     title: string,
-    //     content: string,
-    //     buttons: Button[],
-    //     width: string | number,
-    //     height: string | number,
-    //     closeButton: boolean = true,
-    // ) {
-    //     this._modalOpened = MODAL_CONFIRM;
-
-    //     // Si le bouton n'existe pas déjà
-    //     if (!this._confirm) {
-    //         // Container
-    //         const styles = {
-    //             ...modalStyles.modal.container,
-    //             width: typeof width === 'string' ? width : width + 'px',
-    //             height: typeof height === 'string' ? height : height + 'px',
-    //         };
-    //         const div = createElement({ id: 'modal__confirm', styles });
-
-    //         // Top
-    //         const divTop = createElement({ styles: modalStyles.modal.top });
-    //         div.appendChild(divTop);
-
-    //         // Top - Title
-    //         const divTitle = createElement({ styles: modalStyles.modal.topTitle });
-    //         divTitle.textContent = title;
-    //         divTop.appendChild(divTitle);
-
-    //         // Top - Close button
-    //         if (closeButton) {
-    //             const divCloseBtn = createElement({ styles: modalStyles.modal.topClose, click: () => this.close() });
-    //             divCloseBtn.textContent = '🗙';
-    //             divTop.appendChild(divCloseBtn);
-    //         }
-
-    //         // Content
-    //         const divContent = createElement({ styles: modalStyles.modal.content });
-    //         divContent.textContent = content;
-    //         div.appendChild(divContent);
-
-    //         // Bottom
-    //         const divBottom = createElement({ styles: modalStyles.modal.buttonsWrapper });
-    //         div.appendChild(divBottom);
-
-    //         // Buttons - Button
-    //         buttons.forEach((button) => {
-    //             const stylesButton = {
-    //                 ...modalStyles.modal.button,
-    //                 ...button.styles,
-    //             };
-    //             const stylesButtonHover = {
-    //                 ...modalStyles.modal.buttonHover,
-    //                 backgroundColor: shadeColor(stylesButton.backgroundColor, 0.5),
-    //                 ...button.stylesHover,
-    //             };
-    //             const divButtons = createElement({
-    //                 type: 'button',
-    //                 id: button.id,
-    //                 styles: stylesButton,
-    //                 click: button.click,
-    //             });
-    //             divButtons.addEventListener('click', () => this.close());
-    //             divButtons.addEventListener('mouseover', () => Object.assign(divButtons.style, stylesButtonHover));
-    //             divButtons.addEventListener('mouseout', () => Object.assign(divButtons.style, stylesButton));
-    //             divButtons.textContent = button.content;
-    //             divBottom.appendChild(divButtons);
-    //         });
-
-    //         this._container.appendChild(div);
-
-    //         this._confirm = div;
-    //     }
-    // }
-
     public setConfirm({ title = '', content, buttons, size, close = true }: ModalOptions) {
-        if (!this._confirm) {
-            const div = this.createModal({
-                title,
-                content,
-                buttons,
-                size,
-                close,
-                ui: {
-                    title: title.trim() !== '',
-                    input: false,
-                    buttons: true,
-                },
-                id: 'modal__confirm',
-            });
-
-            this._container.appendChild(div);
-            this._confirm = div;
+        if (this._confirm) {
+            this._confirm.remove();
         }
+        const div = this.createModal({
+            title,
+            content,
+            buttons,
+            size,
+            close,
+            ui: {
+                title: title.trim() !== '',
+                input: false,
+                buttons: true,
+            },
+            id: 'modal__confirm',
+        });
+
+        this._container.appendChild(div);
+        this._confirm = div;
+        return this;
     }
 
     public setAlert({ title = '', content, buttons, size, close = true }: ModalOptions) {
-        if (!this._alert) {
-            const div = this.createModal({
-                title,
-                content,
-                buttons,
-                size,
-                close,
-                ui: {
-                    title: title.trim() !== '',
-                    input: false,
-                    buttons: true,
-                },
-                id: 'modal__alert',
-            });
-
-            this._container.appendChild(div);
-            this._alert = div;
+        if (this._alert) {
+            this._alert.remove();
         }
+        const div = this.createModal({
+            title,
+            content,
+            buttons,
+            size,
+            close,
+            ui: {
+                title: title.trim() !== '',
+                input: false,
+                buttons: true,
+            },
+            id: 'modal__alert',
+        });
+
+        this._container.appendChild(div);
+        this._alert = div;
+        return this;
     }
 
     public setPrompt({ title = '', content, buttons, size, close = true }: ModalOptions) {
-        if (!this._prompt) {
-            const div = this.createModal({
-                title,
-                content,
-                buttons,
-                size,
-                close,
-                ui: {
-                    title: title.trim() !== '',
-                    input: true,
-                    buttons: true,
-                },
-                id: 'modal__prompt',
-            });
-
-            this._container.appendChild(div);
-            this._prompt = div;
+        if (this._prompt) {
+            this._prompt.remove();
         }
+        const div = this.createModal({
+            title,
+            content,
+            buttons,
+            size,
+            close,
+            ui: {
+                title: title.trim() !== '',
+                input: true,
+                buttons: true,
+            },
+            id: 'modal__prompt',
+        });
+
+        this._container.appendChild(div);
+        this._prompt = div;
+        return this;
     }
 
     private createModal({ title, content, buttons, size, close = true, id, ui }: ModalUiOptions) {
         // Container
         const styles = {
             ...modalStyles.modal.container,
-            width: size.width,
-            height: size.height,
+            width: size ? size.width : 'auto',
+            height: size ? size.height : 'auto',
         };
         const div = createElement({ id, styles });
 
@@ -254,7 +177,7 @@ export default class Modal {
         div.appendChild(divContent);
 
         // Bottom
-        const divBottom = createElement({ styles: modalStyles.modal.buttonsWrapper });
+        const divBottom = createElement({ styles: modalStyles.modal.bottom });
         div.appendChild(divBottom);
 
         // Buttons - Button
@@ -274,7 +197,7 @@ export default class Modal {
                 styles: stylesButton,
                 click: button.click,
             });
-            divButtons.addEventListener('click', () => this.close());
+            // divButtons.addEventListener('click', () => this.close());
             divButtons.addEventListener('mouseover', () => Object.assign(divButtons.style, stylesButtonHover));
             divButtons.addEventListener('mouseout', () => Object.assign(divButtons.style, stylesButton));
             divButtons.textContent = button.content;
@@ -342,13 +265,15 @@ const modalStyles = {
             cursor: 'pointer',
         },
         content: {
-            padding: '10px',
+            padding: '20px',
             flex: 1,
+            whiteSpace: 'pre-wrap',
         },
-        buttonsWrapper: {
+        bottom: {
             display: 'flex',
             justifyContent: 'space-around',
             alignItems: 'center',
+            gap: '10px',
             backgroundColor: '#0002',
             height: '50px',
             padding: '10px',
@@ -359,7 +284,8 @@ const modalStyles = {
             borderRadius: '5px',
             border: 'none',
             cursor: 'pointer',
-            backgroundColor: '#cccccc',
+            backgroundColor: '#2d2d2d',
+            color: 'white',
         },
         buttonHover: {},
     },
