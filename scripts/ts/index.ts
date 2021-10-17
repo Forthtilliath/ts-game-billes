@@ -2,12 +2,14 @@ import { Player, Character, Level } from '../types/app';
 import * as Utils from './utils.js';
 import Modal from './modal.js';
 
+/** Différents niveau de difficulté */
 const difficulty: Level = {
     facile: 5,
     difficile: 10,
     impossible: 20,
 };
 
+// Liste des personnages disponibles
 const character_1: Player = {
     name: 'Seong Gi-hun',
     marbles: 25,
@@ -29,9 +31,12 @@ const character_3: Player = {
     gain: 3,
 };
 
+/** Tableau contenant les choix disponibles pour le joueur */
 const characters = [character_1, character_2, character_3];
-const gain = 45.6 * Math.pow(10, 9);
+/** Montant gagné si le joueur gagne la partie */
+const winGain = 45.6 * Math.pow(10, 9);
 
+/** Liste des noms disponibles pour les adversaires */
 const playersName = [
     'Jean-Luc De La Rousse',
     'Benjamin Casse Ta Vie',
@@ -59,19 +64,28 @@ const playersName = [
     'Gérard Deuxpardeux',
 ].sort(() => Math.random() - 0.5);
 
+/** Liste des adversaires */
 const playersToFight: Character[] = Utils.arrayOfN(20, () => ({
     name: playersName.pop()!,
     marbles: Utils.getNumberBetween(1, 20),
 }));
 
+/** Personnage du joueur */
 let playerCharacter: Player | null;
+/** Nombre de manche restantes */
 let gameLeft = difficulty.facile;
+/** Numéro du cours en cours */
 let round = 1;
 
 // Modal
 const modal = new Modal();
 
-// Page 1
+/**
+ * Page 1
+ * Cette page sert pour le choix du personnage du joueur.
+ * 
+ * Au clic d'un des boutons, le choix du personnage du joueur est enregistré et on lance le modal de jeu.
+ */
 modal
     .setConfirm({
         title: 'Choisissez votre personnage ?',
@@ -109,10 +123,23 @@ modal
     })
     .confirm();
 
+/**
+ * Page 2
+ * Boucle du jeu. Tant que le jeu n'est pas terminée, on réappelle le même Modal.
+ * 
+ * Au clic du joueur sur un bouton,
+ */
+/**
+ * Modal principal du jeu
+ * @param round Manche courrante
+ */
 const modalGame = (round: number) => {
+    /** Adversaire à affronter */
     const adversary = playersToFight.pop();
+    /** Contient VRAI si le nombre de billes de l'adversaire est pair */
     let even = adversary!.marbles % 2 === 0;
 
+    /** Configuration du modal */
     const modalGameSettings = {
         title: `Manche ${round} - ${adversary!.name}`,
         content: `Vous avez : ${playerCharacter!.marbles} billes.\n\n\
@@ -132,45 +159,49 @@ Selon vous, votre adversaire a un nombre pair ou impair de billes dans ses mains
     modal.setConfirm(modalGameSettings).confirm();
 };
 
+/**
+ * Gère la fin d'une manche
+ * @param round Numéro du round en cours
+ * @param win Si la manche est gagnée ou pas
+ * @param advMarbles Le nombre de billes de l'adversaire affronté
+ */
 const roundEnd = (round: number, win: boolean, advMarbles: number) => {
-    win ? roundWin(advMarbles) : roundLost(advMarbles);
+    // Met à jour le nombre de billes en fonction de victoire ou défaite
+    if (win)
+        playerCharacter!.marbles += advMarbles + playerCharacter!.gain;
+    else
+        playerCharacter!.marbles -= advMarbles - playerCharacter!.loss;
+    
+    // Réduit le nombre de manche restante
     gameLeft -= 1;
+
+    // Vérifie :
+    // - Si le joueur a perdu,
+    // - Si c'était la dernière manche
+    // - Sinon le jeu passe à la manche suivante
     if (playerCharacter!.marbles < 0) {
-        gameLost();
+        endGame('Perdu, noob !!!');
     } else if (gameLeft === 0) {
-        gameWin();
+        endGame(`Gagné avec ${playerCharacter!.marbles} billes restantes... Tu as triché ?\n\n\
+Tu as gagné ${new Intl.NumberFormat('KRW').format(winGain)} ₩.`);
     } else {
         modalGame(round + 1);
     }
 };
 
-const roundWin = (gain: number) => {
-    console.log('win', gameLeft);
-    playerCharacter!.marbles += gain + playerCharacter!.gain;
-};
-
-const roundLost = (loss: number) => {
-    console.log('lost', gameLeft);
-    playerCharacter!.marbles -= loss - playerCharacter!.loss;
-};
-
-const gameWin = () => {
+/**
+ * Page 3
+ */
+/**
+ * Affiche une alerte avec le message signalant la victoire ou la défaite du joueur
+ * @param content Contenu du message
+ */
+const endGame = (content: string) => {
     modal
         .setAlert({
             title: 'Fin de la partie',
-            content: `Gagné avec ${playerCharacter!.marbles} billes restantes... Tu as triché ?`,
-            buttons: [{ content: 'Fermer', click: () => {} }],
-            close: false,
-        })
-        ?.alert();
-};
-
-const gameLost = () => {
-    modal
-        .setAlert({
-            title: 'Fin de la partie',
-            content: 'Perdu, noob !!!',
-            buttons: [{ content: 'Fermer', click: () => {} }],
+            content,
+            buttons: [{ content: 'Fermer', click: () => modal.close() }],
             close: false,
         })
         ?.alert();

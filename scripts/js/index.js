@@ -24,7 +24,7 @@ const character_3 = {
     gain: 3,
 };
 const characters = [character_1, character_2, character_3];
-const gain = 45.6 * Math.pow(10, 9);
+const winGain = 45.6 * Math.pow(10, 9);
 const playersName = [
     'Jean-Luc De La Rousse',
     'Benjamin Casse Ta Vie',
@@ -117,42 +117,28 @@ Selon vous, votre adversaire a un nombre pair ou impair de billes dans ses mains
     modal.setConfirm(modalGameSettings).confirm();
 };
 const roundEnd = (round, win, advMarbles) => {
-    win ? roundWin(advMarbles) : roundLost(advMarbles);
+    if (win)
+        playerCharacter.marbles += advMarbles + playerCharacter.gain;
+    else
+        playerCharacter.marbles -= advMarbles - playerCharacter.loss;
     gameLeft -= 1;
     if (playerCharacter.marbles < 0) {
-        gameLost();
+        endGame('Perdu, noob !!!');
     }
     else if (gameLeft === 0) {
-        gameWin();
+        endGame(`Gagné avec ${playerCharacter.marbles} billes restantes... Tu as triché ?\n\n\
+Tu as gagné ${new Intl.NumberFormat('KRW').format(winGain)} ₩.`);
     }
     else {
         modalGame(round + 1);
     }
 };
-const roundWin = (gain) => {
-    console.log('win', gameLeft);
-    playerCharacter.marbles += gain + playerCharacter.gain;
-};
-const roundLost = (loss) => {
-    console.log('lost', gameLeft);
-    playerCharacter.marbles -= loss - playerCharacter.loss;
-};
-const gameWin = () => {
+const endGame = (content) => {
     modal
         .setAlert({
         title: 'Fin de la partie',
-        content: `Gagné avec ${playerCharacter.marbles} billes restantes... Tu as triché ?`,
-        buttons: [{ content: 'Fermer', click: () => { } }],
-        close: false,
-    })
-        ?.alert();
-};
-const gameLost = () => {
-    modal
-        .setAlert({
-        title: 'Fin de la partie',
-        content: 'Perdu, noob !!!',
-        buttons: [{ content: 'Fermer', click: () => { } }],
+        content,
+        buttons: [{ content: 'Fermer', click: () => modal.close() }],
         close: false,
     })
         ?.alert();
