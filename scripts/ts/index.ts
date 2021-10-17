@@ -5,7 +5,7 @@ import Modal from './modal.js';
 /** Différents niveau de difficulté */
 const difficulty: Level = {
     facile: 5,
-    difficile: 10,
+    difficile: 12,
     impossible: 20,
 };
 
@@ -95,7 +95,6 @@ modal
     Cho Sang-woo commence le jeu avec 45 billes, perd 1 billes supplémentaires par défaite et en gagne 3 de plus en cas de victoire.`,
         buttons: [
             {
-                id: 'modal__btn--char1',
                 content: 'Seong Gi-hun',
                 click: () => {
                     playerCharacter = characters[0];
@@ -103,7 +102,6 @@ modal
                 },
             },
             {
-                id: 'modal__btn--char2',
                 content: 'Kang Sae-byeok',
                 click: () => {
                     playerCharacter = characters[1];
@@ -111,7 +109,6 @@ modal
                 },
             },
             {
-                id: 'modal__btn--char2',
                 content: 'Cho Sang-woo',
                 click: () => {
                     playerCharacter = characters[2];

@@ -18,13 +18,13 @@ type TCreateElement<T extends TCreateElementBase> = T & {
 
 export const createElement = ({ classes = [], styles = {}, type = 'div', click, ...params }: TCreateElement<any>) => {
     const div = document.createElement(type);
-    div.classList.add(...classes);
+    if(classes.length) div.classList.add(...classes);
     Object.assign(div.style, styles);
 
     div.addEventListener('click', click);
 
     for (const [key, value] of Object.entries(params)) {
-        div.setAttribute(key, value);
+        if( value ) div.setAttribute(key, value);
     }
 
     return div;

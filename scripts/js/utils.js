@@ -3,11 +3,13 @@ export const arrayOfN = (numberOfElements, callback) => Array.from({ length: num
 export const getNumberBetween = (a, b) => Math.floor(Math.random() * b) + a;
 export const createElement = ({ classes = [], styles = {}, type = 'div', click, ...params }) => {
     const div = document.createElement(type);
-    div.classList.add(...classes);
+    if (classes.length)
+        div.classList.add(...classes);
     Object.assign(div.style, styles);
     div.addEventListener('click', click);
     for (const [key, value] of Object.entries(params)) {
-        div.setAttribute(key, value);
+        if (value)
+            div.setAttribute(key, value);
     }
     return div;
 };
