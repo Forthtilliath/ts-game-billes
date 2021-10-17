@@ -6,9 +6,8 @@ export default class Modal {
     private _confirm;
     private _modalOpened;
     constructor();
-    private setOpen;
     private createContainer;
-    private showElement;
+    private setOpacity;
     showConfirm(): void;
     close(): void;
     confirm(title: string, content: string, buttons: Button[], width: string | number, height: string | number, closeButton?: boolean): void;

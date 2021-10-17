@@ -70,14 +70,16 @@ while (gameLeft > 0 && !lost) {
 const modal = new Modal();
 modal.confirm('Alors ton choix ?', 'Tu le veux ou tu le veux pas ?', [
     {
+        id: 'modal__btn--accept',
         content: 'Accepter',
         styles: { backgroundColor: '#00aa00' },
         click: () => console.log('je le veux'),
     },
     {
+        id: 'modal__btn--reject',
         content: 'Refuser',
         styles: { backgroundColor: '#aa0000' },
         click: () => console.log('dégage'),
     },
-], '500px', '170px');
+], '500px', '170px', false);
 document.querySelector('#btn-open-confirm')?.addEventListener('click', () => modal.showConfirm());

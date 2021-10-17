@@ -4,7 +4,9 @@ export type ModalElement = {
 };
 
 export type Button = {
+    id: string,
     content: string,
     styles?:{},
+    stylesHover?:{},
     click: () => void
 }
