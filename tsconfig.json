@@ -14,6 +14,6 @@
         "composite": false,
         "declarationDir": "./scripts/@types"
     },
-    "include": ["./scripts/ts/*", "./scripts/types/**/*"],
+    "include": ["./scripts/ts/**/*", "./scripts/types/**/*"],
     "exclude": ["node_modules", "scripts/js"]
 }

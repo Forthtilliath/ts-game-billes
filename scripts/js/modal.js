@@ -16,87 +16,152 @@ export default class Modal {
         document.body.appendChild(div);
         return div;
     }
-    setOpacity(to, step) {
-        let current = +this._container.style.opacity;
+    setOpacity(element, to, step) {
+        let current = +element.style.opacity;
         if (current < to && this._modalOpened !== MODAL_NONE) {
             current += step;
-            this._container.style.opacity = current.toString();
-            setTimeout(() => this.setOpacity(to, step), 10);
+            element.style.opacity = current.toString();
+            setTimeout(() => this.setOpacity(element, to, step), 10);
         }
     }
-    showConfirm() {
+    showModal(modalToOpen, step) {
         if (this._modalOpened !== MODAL_NONE) {
             this.close();
         }
-        this._modalOpened = MODAL_CONFIRM;
+        this._modalOpened = modalToOpen;
         Object.assign(this._container.style, {
             visibility: 'visible',
         });
-        this.setOpacity(1, 1 / 30);
+        const modals = [this._alert, this._confirm, this._prompt];
+        Object.assign(modals[modalToOpen]?.style, {
+            display: 'flex',
+        });
+        this.setOpacity(modals[modalToOpen], 1, step);
     }
     close() {
-        this._modalOpened = MODAL_NONE;
         Object.assign(this._container.style, {
             visibility: 'hidden',
-            opacity: 0,
         });
+        const modals = [this._alert, this._confirm, this._prompt];
+        Object.assign(modals[this._modalOpened]?.style, {
+            display: 'none',
+            opacity: 0
+        });
+        this._modalOpened = MODAL_NONE;
     }
-    confirm(title, content, buttons, width, height, closeButton = true) {
-        this._modalOpened = MODAL_CONFIRM;
+    setConfirm({ title = '', content, buttons, size, close = true }) {
         if (!this._confirm) {
-            const styles = {
-                ...modalStyles.modal.confirm,
-                width: typeof width === 'string' ? width : width + 'px',
-                height: typeof height === 'string' ? height : height + 'px',
-            };
-            const div = createElement({ id: 'modal__confirm', styles });
-            const divTop = createElement({ styles: modalStyles.modal.top });
-            div.appendChild(divTop);
-            const divTitle = createElement({ styles: modalStyles.modal.topTitle });
-            divTitle.textContent = title;
-            divTop.appendChild(divTitle);
-            if (closeButton) {
-                const divCloseBtn = createElement({ styles: modalStyles.modal.topClose, click: () => this.close() });
-                divCloseBtn.textContent = '🗙';
-                divTop.appendChild(divCloseBtn);
-            }
-            const divContent = createElement({ styles: modalStyles.modal.content });
-            divContent.textContent = content;
-            div.appendChild(divContent);
-            const divBottom = createElement({ styles: modalStyles.modal.buttonsWrapper });
-            div.appendChild(divBottom);
-            buttons.forEach((button) => {
-                const stylesButton = {
-                    ...modalStyles.modal.button,
-                    ...button.styles,
-                };
-                const stylesButtonHover = {
-                    ...modalStyles.modal.buttonHover,
-                    backgroundColor: shadeColor(stylesButton.backgroundColor, 0.5),
-                    ...button.stylesHover,
-                };
-                const divButtons = createElement({
-                    type: 'button',
-                    id: button.id,
-                    styles: stylesButton,
-                    click: button.click,
-                });
-                divButtons.addEventListener('click', () => this.close());
-                divButtons.addEventListener('mouseover', () => Object.assign(divButtons.style, stylesButtonHover));
-                divButtons.addEventListener('mouseout', () => Object.assign(divButtons.style, stylesButton));
-                divButtons.textContent = button.content;
-                divBottom.appendChild(divButtons);
+            const div = this.createModal({
+                title,
+                content,
+                buttons,
+                size,
+                close,
+                ui: {
+                    title: title.trim() !== '',
+                    input: false,
+                    buttons: true,
+                },
+                id: 'modal__confirm',
             });
             this._container.appendChild(div);
-            this._confirm = {
-                element: div,
-                visible: false,
-            };
+            this._confirm = div;
         }
     }
-    alert() { }
-    prompt() { }
+    setAlert({ title = '', content, buttons, size, close = true }) {
+        if (!this._alert) {
+            const div = this.createModal({
+                title,
+                content,
+                buttons,
+                size,
+                close,
+                ui: {
+                    title: title.trim() !== '',
+                    input: false,
+                    buttons: true,
+                },
+                id: 'modal__alert',
+            });
+            this._container.appendChild(div);
+            this._alert = div;
+        }
+    }
+    setPrompt({ title = '', content, buttons, size, close = true }) {
+        if (!this._prompt) {
+            const div = this.createModal({
+                title,
+                content,
+                buttons,
+                size,
+                close,
+                ui: {
+                    title: title.trim() !== '',
+                    input: true,
+                    buttons: true,
+                },
+                id: 'modal__prompt',
+            });
+            this._container.appendChild(div);
+            this._prompt = div;
+        }
+    }
+    createModal({ title, content, buttons, size, close = true, id, ui }) {
+        const styles = {
+            ...modalStyles.modal.container,
+            width: size.width,
+            height: size.height,
+        };
+        const div = createElement({ id, styles });
+        const divTop = createElement({ styles: modalStyles.modal.top });
+        div.appendChild(divTop);
+        const divTitle = createElement({ styles: modalStyles.modal.topTitle });
+        divTitle.textContent = title;
+        divTop.appendChild(divTitle);
+        if (close) {
+            const divCloseBtn = createElement({ styles: modalStyles.modal.topClose, click: () => this.close() });
+            divCloseBtn.textContent = '🗙';
+            divTop.appendChild(divCloseBtn);
+        }
+        const divContent = createElement({ styles: modalStyles.modal.content });
+        divContent.textContent = content;
+        div.appendChild(divContent);
+        const divBottom = createElement({ styles: modalStyles.modal.buttonsWrapper });
+        div.appendChild(divBottom);
+        buttons.forEach((button) => {
+            const stylesButton = {
+                ...modalStyles.modal.button,
+                ...button.styles,
+            };
+            const stylesButtonHover = {
+                ...modalStyles.modal.buttonHover,
+                backgroundColor: shadeColor(stylesButton.backgroundColor, 0.5),
+                ...button.stylesHover,
+            };
+            const divButtons = createElement({
+                type: 'button',
+                id: button.id,
+                styles: stylesButton,
+                click: button.click,
+            });
+            divButtons.addEventListener('click', () => this.close());
+            divButtons.addEventListener('mouseover', () => Object.assign(divButtons.style, stylesButtonHover));
+            divButtons.addEventListener('mouseout', () => Object.assign(divButtons.style, stylesButton));
+            divButtons.textContent = button.content;
+            divBottom.appendChild(divButtons);
+        });
+        return div;
+    }
     getStyles() { }
+    confirm() {
+        this.showModal(MODAL_CONFIRM, 0.01);
+    }
+    alert() {
+        this.showModal(MODAL_ALERT, 0.01);
+    }
+    prompt() {
+        this.showModal(MODAL_PROMPT, 0.01);
+    }
 }
 const modalStyles = {
     container: {
@@ -104,23 +169,23 @@ const modalStyles = {
         width: '100vw',
         height: '100vh',
         zIndex: 9999,
-        backgroundColor: '#000d',
+        backgroundColor: '#2a2a2a',
         top: 0,
         left: 0,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        transition: 'visibility .05s linear .25s, opacity .3s linear',
         visibility: 'hidden',
-        opacity: 0,
     },
     modal: {
-        confirm: {
+        container: {
             backgroundColor: '#f2f2f2',
             borderRadius: '10px',
             color: '#0d0d0d',
-            display: 'flex',
+            display: 'none',
             flexDirection: 'column',
+            transition: 'all .3s linear',
+            opacity: 0,
         },
         top: {
             backgroundColor: '#0002',

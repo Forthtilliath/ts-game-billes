@@ -1,4 +1,4 @@
-import { Button } from '../types/modal';
+import { ModalOptions } from '../types/modal';
 export default class Modal {
     private _container;
     private _alert;
@@ -8,10 +8,14 @@ export default class Modal {
     constructor();
     private createContainer;
     private setOpacity;
-    showConfirm(): void;
+    private showModal;
     close(): void;
-    confirm(title: string, content: string, buttons: Button[], width: string | number, height: string | number, closeButton?: boolean): void;
+    setConfirm({ title, content, buttons, size, close }: ModalOptions): void;
+    setAlert({ title, content, buttons, size, close }: ModalOptions): void;
+    setPrompt({ title, content, buttons, size, close }: ModalOptions): void;
+    private createModal;
+    getStyles(): void;
+    confirm(): void;
     alert(): void;
     prompt(): void;
-    getStyles(): void;
 }
