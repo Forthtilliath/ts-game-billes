@@ -6,6 +6,15 @@ const MODAL_ALERT = 0;
 const MODAL_CONFIRM = 1;
 const MODAL_PROMPT = 2;
 
+// function showElement(element: HTMLElement, from: number, to: number) {
+//     const currentOpacity = Number(element.style.opacity);
+//     if (currentOpacity < to) {
+//         currentOpacity += 0.075;
+//         element.style.opacity = currentOpacity.toString();
+//         setTimeout(() => showElement(element, currentOpacity, to), 100);
+//     }
+// }
+
 export default class Modal {
     private _container: HTMLDivElement;
     private _alert: ModalElement | null;
@@ -38,6 +47,9 @@ export default class Modal {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            transition: 'visibility .05s linear .25s, opacity .3s linear',
+            visibility: 'hidden',
+            opacity: 0,
         };
         const div = createElement({ id: 'modal', styles }) as HTMLDivElement;
         document.body.appendChild(div);
@@ -45,9 +57,29 @@ export default class Modal {
         return div;
     }
 
+    private showElement(from: number, to:number) {
+        if (from < to && this._modalOpened !== MODAL_NONE) {
+            from += 0.075;
+            this._container.style.opacity = from.toString();
+            setTimeout(() => this.showElement(from, to), 100);
+        }
+    }
+
+    public showConfirm() {
+        this._modalOpened = MODAL_CONFIRM;
+        Object.assign(this._container.style, {
+            visibility: 'visible',
+        });
+        this.showElement(0, 1);
+    }
+
     public close() {
+        // console.log('close modal');
         this._modalOpened = MODAL_NONE;
-        console.log('close modal');
+        Object.assign(this._container.style, {
+            visibility: 'hidden',
+            opacity: 0,
+        });
     }
 
     public confirm(
@@ -110,7 +142,7 @@ export default class Modal {
             divCloseBtn.textContent = '🗙';
             divTop.appendChild(divCloseBtn);
 
-            divTop.addEventListener('click', () => this.close())
+            divTop.addEventListener('click', () => this.close());
 
             // Content
             const stylesContent = {
@@ -175,4 +207,24 @@ export default class Modal {
     public prompt() {}
 
     public getStyles() {}
+}
+
+const modalStyles = {
+    container: {
+
+    },
+    modal: {
+        top: {
+            title: {
+
+            },
+            close: {
+
+            }
+        },
+        content: {
+
+        },
+
+    }
 }

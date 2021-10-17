@@ -75,6 +75,16 @@ const play = () => {
 let gameLeft = difficulty.facile;
 let lost = false;
 
+
+
+console.log(gameLeft, lost);
+while (gameLeft > 0 && !lost) {
+    lost = play();
+    gameLeft -= 1;
+}
+
+// Modal
+
 const modal = new Modal();
 modal.confirm(
     'Alors ton choix ?',
@@ -96,8 +106,4 @@ modal.confirm(
     // false
 );
 
-console.log(gameLeft, lost);
-while (gameLeft > 0 && !lost) {
-    lost = play();
-    gameLeft -= 1;
-}
+document.querySelector('#btn-open-confirm')?.addEventListener('click', () => modal.showConfirm());

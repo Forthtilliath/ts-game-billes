@@ -26,14 +26,34 @@ export default class Modal {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            transition: 'visibility .05s linear .25s, opacity .3s linear',
+            visibility: 'hidden',
+            opacity: 0,
         };
         const div = createElement({ id: 'modal', styles });
         document.body.appendChild(div);
         return div;
     }
+    showElement(from, to) {
+        if (from < to && this._modalOpened !== MODAL_NONE) {
+            from += 0.075;
+            this._container.style.opacity = from.toString();
+            setTimeout(() => this.showElement(from, to), 100);
+        }
+    }
+    showConfirm() {
+        this._modalOpened = MODAL_CONFIRM;
+        Object.assign(this._container.style, {
+            visibility: 'visible',
+        });
+        this.showElement(0, 1);
+    }
     close() {
         this._modalOpened = MODAL_NONE;
-        console.log('close modal');
+        Object.assign(this._container.style, {
+            visibility: 'hidden',
+            opacity: 0,
+        });
     }
     confirm(title, content, buttons, width, height, closeButton = true) {
         if (this._modalOpened !== MODAL_NONE) {
@@ -132,3 +152,13 @@ export default class Modal {
     prompt() { }
     getStyles() { }
 }
+const modalStyles = {
+    container: {},
+    modal: {
+        top: {
+            title: {},
+            close: {}
+        },
+        content: {},
+    }
+};

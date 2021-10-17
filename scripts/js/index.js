@@ -62,6 +62,11 @@ const play = () => {
 };
 let gameLeft = difficulty.facile;
 let lost = false;
+console.log(gameLeft, lost);
+while (gameLeft > 0 && !lost) {
+    lost = play();
+    gameLeft -= 1;
+}
 const modal = new Modal();
 modal.confirm('Alors ton choix ?', 'Tu le veux ou tu le veux pas ?', [
     {
@@ -75,8 +80,4 @@ modal.confirm('Alors ton choix ?', 'Tu le veux ou tu le veux pas ?', [
         click: () => console.log('dégage'),
     },
 ], '500px', '170px');
-console.log(gameLeft, lost);
-while (gameLeft > 0 && !lost) {
-    lost = play();
-    gameLeft -= 1;
-}
+document.querySelector('#btn-open-confirm')?.addEventListener('click', () => modal.showConfirm());

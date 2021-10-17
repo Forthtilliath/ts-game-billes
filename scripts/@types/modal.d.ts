@@ -8,6 +8,8 @@ export default class Modal {
     constructor();
     private setOpen;
     private createContainer;
+    private showElement;
+    showConfirm(): void;
     close(): void;
     confirm(title: string, content: string, buttons: Button[], width: string | number, height: string | number, closeButton?: boolean): void;
     alert(): void;
